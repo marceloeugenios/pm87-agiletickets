@@ -12,13 +12,13 @@ public class CalculadoraDePrecos {
 		if(sessao.getEspetaculo().getTipo().equals(TipoDeEspetaculo.CINEMA) || sessao.getEspetaculo().getTipo().equals(TipoDeEspetaculo.SHOW)) {
 			//quando estiver acabando os ingressos... 
 			if(verificarQuantidadeIngressos(sessao, 0.05)) { 
-				preco = sessao.getPreco().add(sessao.getPreco().multiply(BigDecimal.valueOf(0.10)));
+				preco = calculaPreco(sessao, 0.10);
 			} else {
 				preco = sessao.getPreco();
 			}
 		} else if(sessao.getEspetaculo().getTipo().equals(TipoDeEspetaculo.BALLET)) {
 			if(verificarQuantidadeIngressos(sessao, 0.50)) { 
-				preco = sessao.getPreco().add(sessao.getPreco().multiply(BigDecimal.valueOf(0.20)));
+				preco = calculaPreco(sessao, 0.20);
 			} else {
 				preco = sessao.getPreco();
 			}
@@ -28,7 +28,7 @@ public class CalculadoraDePrecos {
 			}
 		} else if(sessao.getEspetaculo().getTipo().equals(TipoDeEspetaculo.ORQUESTRA)) {
 			if(verificarQuantidadeIngressos(sessao, 0.50)) { 
-				preco = sessao.getPreco().add(sessao.getPreco().multiply(BigDecimal.valueOf(0.20)));
+				preco = calculaPreco(sessao, 0.20);
 			} else {
 				preco = sessao.getPreco();
 			}
@@ -41,6 +41,10 @@ public class CalculadoraDePrecos {
 			preco = sessao.getPreco();
 		} 
 		return preco.multiply(BigDecimal.valueOf(quantidade));
+	}
+
+	private static BigDecimal calculaPreco(Sessao sessao, double multiplicador) {
+		return sessao.getPreco().add(sessao.getPreco().multiply(BigDecimal.valueOf(multiplicador)));
 	}
 
 	private static boolean verificarQuantidadeIngressos(Sessao sessao, double limite) {
