@@ -107,20 +107,13 @@ public class Espetaculo {
 			sessao = new Sessao(inicio.toDateTime(horario));
 			listaSessoes.add(sessao);
 		}
-		if (periodicidade.equals(Periodicidade.DIARIA)){
-			for (int i = 0; i < dias; i++) {
-				sessao = new Sessao(inicio.toDateTime(horario));
-				inicio = inicio.plusDays(periodicidade.getDias());
-				listaSessoes.add(sessao);
-			}
-		}
-		else{
-			int semanas = dias/7;
-			for (int i = 0; i < semanas; i++) {
-				sessao = new Sessao(inicio.toDateTime(horario));
-				inicio = inicio.plusDays(periodicidade.getDias());
-				listaSessoes.add(sessao);
-			}
+
+		int numeroSessoes = dias/periodicidade.getDias();
+		
+		for (int i = 0; i < numeroSessoes; i++) {
+			sessao = new Sessao(inicio.toDateTime(horario));
+			inicio = inicio.plusDays(periodicidade.getDias());
+			listaSessoes.add(sessao);
 		}
 		
 		return listaSessoes;
