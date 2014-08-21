@@ -7,7 +7,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -17,6 +20,7 @@ import org.mockito.Spy;
 import br.com.caelum.agiletickets.domain.Agenda;
 import br.com.caelum.agiletickets.domain.DiretorioDeEstabelecimentos;
 import br.com.caelum.agiletickets.models.Espetaculo;
+import br.com.caelum.agiletickets.models.Periodicidade;
 import br.com.caelum.agiletickets.models.Sessao;
 import br.com.caelum.agiletickets.models.TipoDeEspetaculo;
 import br.com.caelum.vraptor.Result;
@@ -31,6 +35,11 @@ public class EspetaculosControllerTest {
 	private @Mock DiretorioDeEstabelecimentos estabelecimentos;
 	private @Spy Validator validator = new MockValidator();
 	private @Spy Result result = new MockResult();
+	private Espetaculo espetaculo;
+	private LocalDate inicio;
+	private LocalDate fim;
+	private LocalTime horario;
+	private int quantidadeSessoes;
 	
 	private EspetaculosController controller;
 
@@ -38,6 +47,10 @@ public class EspetaculosControllerTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		controller = new EspetaculosController(result, validator, agenda, estabelecimentos);
+		espetaculo = new Espetaculo();
+		inicio = new LocalDate(2014, 8, 21);
+		fim = new LocalDate(2014, 8, 21);
+		horario = new LocalTime(20, 0, 0); 
 	}
 
 	@Test(expected=ValidationException.class)
@@ -118,4 +131,84 @@ public class EspetaculosControllerTest {
 		assertThat(sessao.getIngressosDisponiveis(), is(2));
 	}
 
+	@Test
+	public void criaApenasUmaSessaoDiaria() throws Exception {
+		quantidadeSessoes = 1;
+		Periodicidade periodicidade = Periodicidade.DIARIA;
+		List<Sessao> sessoes = espetaculo.criaSessoes(inicio, inicio, horario, periodicidade);
+		Sessao sessao = sessoes.get(0);
+		
+		org.junit.Assert.assertEquals(inicio.toDateTime(horario), sessao.getInicio());
+		org.junit.Assert.assertEquals(quantidadeSessoes, sessoes.size());
+	}
+	
+	@Test
+	public void criaDuasSessoesDiaria() throws Exception {
+		quantidadeSessoes = 2;
+		Periodicidade periodicidade = Periodicidade.DIARIA;
+		List<Sessao> sessoes = espetaculo.criaSessoes(inicio, inicio.plusDays(quantidadeSessoes), horario, periodicidade);
+		Sessao primeiraSessao = sessoes.get(0);
+		Sessao segundaSessao = sessoes.get(1);
+		
+		org.junit.Assert.assertEquals(inicio.toDateTime(horario), primeiraSessao.getInicio());
+		org.junit.Assert.assertEquals(inicio.plusDays(1).toDateTime(horario), segundaSessao.getInicio());
+		
+		org.junit.Assert.assertEquals(quantidadeSessoes, sessoes.size());
+		
+	}
+	
+	@Test
+	public void criaDezSessoesDiaria() throws Exception {
+		quantidadeSessoes = 10;
+		Periodicidade periodicidade = Periodicidade.DIARIA;
+		List<Sessao> sessoes = espetaculo.criaSessoes(inicio, inicio.plusDays(quantidadeSessoes), horario, periodicidade);
+		Sessao primeiraSessao = sessoes.get(0);
+		Sessao ultimaSessao = sessoes.get(9);
+		
+		org.junit.Assert.assertEquals(inicio.toDateTime(horario), primeiraSessao.getInicio());
+		org.junit.Assert.assertEquals(inicio.plusDays(9).toDateTime(horario), ultimaSessao.getInicio());		
+		org.junit.Assert.assertEquals(quantidadeSessoes, sessoes.size());
+		
+	}
+	
+	@Test
+	public void criaApenasUmaSessaoSemanal() throws Exception {
+		quantidadeSessoes = 1;
+		Periodicidade periodicidade = Periodicidade.SEMANAL;
+		List<Sessao> sessoes = espetaculo.criaSessoes(inicio, inicio, horario, periodicidade);
+		Sessao sessao = sessoes.get(0);
+		
+		org.junit.Assert.assertEquals(inicio.toDateTime(horario), sessao.getInicio());
+		org.junit.Assert.assertEquals(quantidadeSessoes, sessoes.size());
+	}
+	
+	@Test
+	public void criaDuasSessoesSemanal() throws Exception {
+		quantidadeSessoes = 2;
+		Periodicidade periodicidade = Periodicidade.SEMANAL;
+		fim = inicio.plusDays(periodicidade.getDias() * quantidadeSessoes);
+		List<Sessao> sessoes = espetaculo.criaSessoes(inicio, fim, horario, periodicidade);
+		Sessao primeiraSessao = sessoes.get(0);
+		Sessao segundaSessao = sessoes.get(1);
+		
+		org.junit.Assert.assertEquals(inicio.toDateTime(horario), primeiraSessao.getInicio());
+		org.junit.Assert.assertEquals(inicio.plusDays(7).toDateTime(horario), segundaSessao.getInicio());
+		org.junit.Assert.assertEquals(quantidadeSessoes, sessoes.size());
+		
+	}
+	
+	@Test
+	public void criaDezSessoesSemanal() throws Exception {
+		quantidadeSessoes = 10;
+		Periodicidade periodicidade = Periodicidade.SEMANAL;
+		
+		fim = inicio.plusDays(periodicidade.getDias() * quantidadeSessoes);
+		List<Sessao> sessoes = espetaculo.criaSessoes(inicio, fim, horario, periodicidade);
+		Sessao primeiraSessao = sessoes.get(0);
+		Sessao ultimaSessao = sessoes.get(9);
+		
+		org.junit.Assert.assertEquals(inicio.toDateTime(horario), primeiraSessao.getInicio());
+		org.junit.Assert.assertEquals(inicio.plusDays(63).toDateTime(horario), ultimaSessao.getInicio());
+		org.junit.Assert.assertEquals(quantidadeSessoes, sessoes.size());
+	}
 }

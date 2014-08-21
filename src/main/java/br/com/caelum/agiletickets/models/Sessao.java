@@ -15,6 +15,7 @@ import org.joda.time.format.DateTimeFormat;
 
 @Entity
 public class Sessao {
+	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +34,14 @@ public class Sessao {
 	private Integer ingressosReservados = 0;
 
 	private BigDecimal preco;
+
+	public Sessao(DateTime inicio) {
+		this.inicio = inicio;
+	}
+
+	public Sessao() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public Long getId() {
 		return id;
