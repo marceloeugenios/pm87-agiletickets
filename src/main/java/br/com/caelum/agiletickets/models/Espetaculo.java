@@ -102,12 +102,12 @@ public class Espetaculo {
 		int dias = 0;
 		ArrayList<Sessao> listaSessoes = new ArrayList<Sessao>();
 		Sessao sessao = null;
-		dias = Days.daysBetween(inicio, fim).getDays();
-		if ( dias == 0 ){
+		
+		if (inicio.equals(fim)){
 			sessao = new Sessao(inicio.toDateTime(horario));
 			listaSessoes.add(sessao);
 		}
-
+		dias = Days.daysBetween(inicio, fim).getDays();
 		int numeroSessoes = dias/periodicidade.getDias();
 		
 		for (int i = 0; i < numeroSessoes; i++) {
