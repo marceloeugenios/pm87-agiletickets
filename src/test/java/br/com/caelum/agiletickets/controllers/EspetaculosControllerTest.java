@@ -184,7 +184,7 @@ public class EspetaculosControllerTest {
 	
 	@Test
 	public void criaDuasSessoesSemanal() throws Exception {
-		quantidadeSessoes = 1;//2;
+		quantidadeSessoes = 2;
 		Periodicidade periodicidade = Periodicidade.SEMANAL;
 		fim = inicio.plusDays(periodicidade.getDias() * quantidadeSessoes);
 		List<Sessao> sessoes = espetaculo.criaSessoes(inicio, fim, horario, periodicidade);
